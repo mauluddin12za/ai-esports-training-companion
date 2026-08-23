@@ -22,25 +22,29 @@ const API_KEYS = [
 ].filter(Boolean) as string[];
 
 /**
- * MAIN FUNCTION (same return type as before)
+ * MAIN FUNCTION
  */
 export async function callGemini<T>(prompt: unknown): Promise<T> {
   for (let keyIndex = 0; keyIndex < API_KEYS.length; keyIndex++) {
     const apiKey = API_KEYS[keyIndex];
 
     for (const model of MODELS) {
-      const client = axios.create({
-        baseURL: `https://generativelanguage.googleapis.com/v1beta/models/${model}`,
-        headers: {
-          "x-goog-api-key": apiKey,
-          "Content-Type": "application/json",
-        },
-      });
+      // Construct the absolute URL safely to prevent Axios colon-resolution issues
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
 
       try {
-        const response = await client.post(":generateContent", {
-          contents: [{ parts: [{ text: JSON.stringify(prompt) }] }],
-        });
+        const response = await axios.post(
+          url,
+          {
+            contents: [{ parts: [{ text: JSON.stringify(prompt) }] }],
+          },
+          {
+            headers: {
+              "x-goog-api-key": apiKey,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         const text =
           response.data.candidates?.[0]?.content?.parts?.[0]?.text ?? "{}";
