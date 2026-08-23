@@ -12,6 +12,10 @@ const MODELS = [
   process.env.NEXT_PUBLIC_GEMINI_MODEL_FALLBACK_2,
 ].filter(Boolean) as string[];
 
+if (MODELS.length === 0) {
+  console.error("[Gemini Config Error] No models specified in environment variables!");
+}
+
 const API_KEYS = [
   process.env.NEXT_PUBLIC_GEMINI_API_KEY,
   process.env.NEXT_PUBLIC_GEMINI_API_KEY_2,
